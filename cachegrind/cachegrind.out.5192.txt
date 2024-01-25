@@ -1,0 +1,31 @@
+--------------------------------------------------------------------------------
+I1 cache:         32768 B, 64 B, 8-way associative
+D1 cache:         32768 B, 64 B, 8-way associative
+LL cache:         12582912 B, 64 B, 24-way associative
+Command:          /mnt/c/Users/adzic/Desktop/vs/2023_Analysis_24-kalendar/2023_Analysis_24-kalendar/24-kalendar/build-calendar-Desktop-Debug/calendar
+Data file:        cachegrind.out.5192
+Events recorded:  Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Events shown:     Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Event sort order: Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Thresholds:       0.1 100 100 100 100 100 100 100 100
+Include dirs:     
+User annotated:   
+Auto-annotation:  off
+
+--------------------------------------------------------------------------------
+Ir             I1mr      ILmr    Dr            D1mr       DLmr       Dw            D1mw       DLmw       
+--------------------------------------------------------------------------------
+13,726,558,290 1,918,419 189,185 3,033,920,931 42,114,476 26,269,696 1,564,426,915 39,789,132 21,425,119  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir             I1mr      ILmr    Dr            D1mr       DLmr       Dw          D1mw       DLmw        file:function
+--------------------------------------------------------------------------------
+12,042,956,744 1,273,309 132,905 2,823,137,274 37,903,064 25,399,620 863,720,930 18,440,616  1,360,169  ???:???
+   580,021,020        50      50    78,799,650    393,071         10  47,913,940     14,130         10  ???:jpeg_fill_bit_buffer
+   545,755,680       165      12        14,051      7,186          0 545,657,323  8,517,260  8,492,282  /build/glibc-wuryBv/glibc-2.31/string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:__memset_avx2_erms
+   299,901,250       170     170    35,392,500    147,200         10  45,375,000 11,248,105 11,223,440  ???:qt_convert_rgb888_to_rgb32_ssse3(unsigned int*, unsigned char const*, int)
+    44,881,566     4,866     147    39,365,168    928,961    539,243  39,222,614  1,253,407    158,104  /build/glibc-wuryBv/glibc-2.31/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms
+    29,716,379     2,565     131    10,416,241  1,263,554     22,256   3,284,284      9,962        154  /build/glibc-wuryBv/glibc-2.31/elf/dl-lookup.c:do_lookup_x
+    26,784,810       186      20    10,040,767        158          0   1,058,817          1          0  ???:adler32_z
+    16,460,360        45      45     3,736,650     21,226         36   2,472,470          0          0  ???:jpeg_huff_decode
+
