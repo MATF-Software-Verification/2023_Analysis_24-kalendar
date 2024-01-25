@@ -1,0 +1,24 @@
+==37311== Callgrind, a call-graph generating cache profiler
+==37311== Copyright (C) 2002-2017, and GNU GPL'd, by Josef Weidendorfer et al.
+==37311== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==37311== Command: /mnt/c/Users/adzic/Desktop/vs/2023_Analysis_24-kalendar/2023_Analysis_24-kalendar/24-kalendar/build-calendar-Desktop-Debug/calendar
+==37311== Parent PID: 37309
+==37311== 
+==37311== For interactive control, run 'callgrind_control -h'.
+==37311== brk segment overflow in thread #1: can't grow to 0x484d000
+==37311== (see section Limitations in user manual)
+==37311== NOTE: further instances of this message will not be shown
+==37311== 
+==37311== Process terminating with default action of signal 2 (SIGINT)
+==37311==    at 0x5F31BBF: poll (poll.c:29)
+==37311==    by 0x886CC19: ??? (in /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
+==37311==    by 0x886E909: xcb_wait_for_event (in /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0)
+==37311==    by 0x8DD9297: ??? (in /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12.8)
+==37311==    by 0x57959D1: ??? (in /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12.8)
+==37311==    by 0x6168608: start_thread (pthread_create.c:477)
+==37311==    by 0x5F3E352: clone (clone.S:95)
+==37311== 
+==37311== Events    : Ir
+==37311== Collected : 3149973930
+==37311== 
+==37311== I   refs:      3,149,973,930
