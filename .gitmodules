@@ -4,3 +4,6 @@
 [submodule "19-under-the-c"]
 	path = 19-under-the-c
 	url = https://gitlab.com/matf-bg-ac-rs/course-rs/projects-2020-2021/19-under-the-c.git
+[submodule "perf/FlameGraph/git"]
+	path = perf/FlameGraph/git
+	url = https://github.com/brendangregg/FlameGraph
