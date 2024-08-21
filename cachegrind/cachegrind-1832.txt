@@ -1,6 +1,0 @@
-==1832== Cachegrind, a cache and branch-prediction profiler
-==1832== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
-==1832== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==1832== Command: /mnt/c/Users/adzic/Desktop/vs/2023_Analysis_24-kalendar/2023_Analysis_24-kalendar/24-kalendar/build-calendar-Desktop-Debug/calendar
-==1832== Parent PID: 1818
-==1832== 
