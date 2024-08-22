@@ -165,3 +165,55 @@ Iz primera steka poziva funkcija vidimo problem koji se odnosi na problem `još 
 
 Generalno, u izveštaju postoji dosta `still reachable` greški koje ukazuju na loše upravljanje memorijom i neefikasno korićenje resursa.
 
+
+### Callgrind
+
+**Callgrind** je alat za profajliranje koji čuva istoriju poziva funkcija u programu kao graf poziva.\
+Neke od informacija koje se mogu dobiti za zadati program su:
+* broj izvršenih instrukcija
+* odnosi izvršenih instrukcija sa odgovarajućim linijama koda
+* caller/callee odnos između funkcija (sa frekvencijama)
+* informacije o keširanju (promašaji, pogodci, ...)
+
+Dodatne opcije koje su korišćene prilikom analize:
+- *--tool=callgrind* : specifiramo koji Valgrind alat koristimo
+- *--keep-debuginfo=yes* : opcija koja osigurava da Callgrind zadrži debug informacije tokom rada koje su neophodne za povezivanje prikupljenih podataka sa linijama koda i funkcijama u programu
+- *--callgrind-out-file=callgrind-%p.out* : specificiramo ime izlaznog fajla u koji će Callgrind upisati rezultate profilisanja *callgrind-PID.out*
+- *--log-file="calgrind-%p.txt"* : rezultati analize će biti upisani u *callgrind-PID.txt* fajlu
+- *--dump-instr=yes* : opcija koja omogućava beleženje informacija o instrukcijama koje se izvršavaju - koje se instrukcije izvode i koliko često
+- *--collect-jumps=yes* : opcja koja omogućava prikupljanje podataka o skokovima unutar koda, kao što su skokovi na osnovu grananja ili petlji
+- *--simulate-cache=yes* : uključuje simulaciju keš memorije procesora
+
+Pre pokretanja komande potrebno je prevesti program u **Profile** režimu.
+
+Komanda kojom je pokrenuta analiza izgleda ovako:
+```
+valgrind --tool=callgrind  --keep-debuginfo=yes --callgrind-out-file="callgrind-%p.out" --log-file="callgrind-%p.txt" --dump-instr=yes --collect-jumps=yes --simulate-cache=yes ../19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Profile/UNDER_THE_C
+```
+
+Pokreće se pomoću [skripte](callgrind/callgrind.sh):
+```
+./callgrind.sh
+```
+
+Kao rezultat analize, dobijen je *callgrind-PID.txt* report fajl.
+Kako je dodata opcija za simulaciju keš memorije, u reportu će se prikazati simulicija memorije mašine (koju se dobija i upotrebom alata `cachegrind`), koja ima prvi nivo keš memorije podeljene u dve odvojene nezavisne sekcije: I1 - sekcija keš memorije u koju se smeštaju instrukcije D1 - sekcija keš memorije u koju se smeštaju podaci. Drugi nivo keš memorije koja se simulira je objedinjen - LL, skraćeno od eng. last level.
+
+Pored .txt fajla, kao output se dobija i [*callgrind-109531.out*](callgrind/callgrind-109531.out)
+*callgrind.out.11677* moze se otvoriti pomoću **KCachegrind** pomoćnog alata za vizuelizaciju.
+**KCachegrind** alat se na instalira pokretanjem komande:
+```
+sudo apt-get install kcachegrind
+```
+
+Prikaz *Calle Map* i *Calles* za funkciju *Game::initialize()*:
+
+![img](callgrind/kachegrind/kachegrind_allcallesmap.PNG)
+
+Na sledećoj slici je prikazana lista svih funkcija koje su se pozivale od pokretanja programa, kao i graf poziva funkcija.
+
+![img](callgrind/kachegrind/callgrind_allcalls_.PNG)
+![img](callgrind/kachegrind/callgrind_calgraph.PNG)
+
+**Komentar:** Izveštaj na osnovu kcachegrinda pokazuje da su se najvećim delom izvršavanja pozivale funkcije implemetirane od strane programera, sistemskih poziva je manje.
+
