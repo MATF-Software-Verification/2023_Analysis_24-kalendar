@@ -1,6 +1,9 @@
-[1m/home/jovana/Desktop/vs/19-under-the-c/UNDER_THE_C/Sources/Music.cpp:16:9: [31merror:[39m There is an unknown macro here somewhere. Configuration is required. If foreach is a macro then please configure it. [unknownMacro][0m
+[1m../19-under-the-c/UNDER_THE_C/Headers/Score.h:9:5: [31mstyle:[39m Class 'Score' has a constructor with 1 argument that is not explicit. [noExplicitConstructor][0m
+    Score(int t);
+    ^
+[1m../19-under-the-c/UNDER_THE_C/Sources/Music.cpp:16:9: [31merror:[39m There is an unknown macro here somewhere. Configuration is required. If foreach is a macro then please configure it. [unknownMacro][0m
         foreach(auto music, musics)
         ^
-[1m/home/jovana/Desktop/vs/19-under-the-c/UNDER_THE_C/Sources/MenuScene.cpp:17:0: [31mstyle:[39m The function 'play' is never used. [unusedFunction][0m
+[1m../19-under-the-c/UNDER_THE_C/Sources/MenuScene.cpp:17:0: [31mstyle:[39m The function 'play' is never used. [unusedFunction][0m
 
 ^
