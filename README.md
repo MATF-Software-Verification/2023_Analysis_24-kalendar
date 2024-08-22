@@ -27,12 +27,13 @@ Sama analiza je vršena nad glavnom **master** granom.
 U analizi su korišćeni sledeći alati:
 
 - Valgrind alati:
-    -Memcheck
-    -Callgrind
+    - Memcheck
+    - Callgrind
 - Alati za statičku analizu:
     - Clang-Tidy
     - Cppcheck
 - Perf
+- Strace
 
 Opisi svakog od alata, skripte za pokretanje, sami outputi analize se nalaze u dokumentu [dok](ProjectAnalysisReport.md)
 
