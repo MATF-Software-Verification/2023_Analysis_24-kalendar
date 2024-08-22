@@ -26,13 +26,13 @@ Sama analiza je vršena nad glavnom **master** granom.
 
 U analizi su korišćeni sledeći alati:
 
-1. Valgrind alati:
-    1.1 Memcheck
-    1.2 Callgrind
-2. Alati za statičku analizu:
-    2.1 Clang-Tidy
-    2.2 Cppcheck
-3. Perf
+- Valgrind alati:
+    -Memcheck
+    -Callgrind
+- Alati za statičku analizu:
+    - Clang-Tidy
+    - Cppcheck
+- Perf
 
 Opisi svakog od alata, skripte za pokretanje, sami outputi analize se nalaze u dokumentu [dok](ProjectAnalysisReport.md)
 
@@ -40,4 +40,4 @@ Opisi svakog od alata, skripte za pokretanje, sami outputi analize se nalaze u d
 Alati su, većinski, pokretani iz terminala Ubuntu operativnog sistema koristeći unapred pripremljene skripte
 Pojedini alati su se pokretali i direktno iz `QtCreator` okruženja jer u okviru okruženja postoji podrška za izvršavanje pojedinih alata za analizu.
 
-## Zaključci
+## Zaključak
