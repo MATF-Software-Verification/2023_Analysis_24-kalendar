@@ -55,3 +55,113 @@ Primera iz dobijenog izveštaja:
 
      **Komentar:** Alat kaže da u kodu postoji deklarisana funkcija koja se nigde ne koristi.
 
+## Clang-tidy
+TBD
+
+## Valgrind alati
+
+Valgrind je moćan alat za profilisanje i otkrivanje grešaka u emoriji u C, C++ i sličnim jezicima. Najčešće se koristi za detekciju problema vezanih za alokaciju i upravljanje memorijom, prisup neinicijalizovanim memorijskim lokacijama ili pokušaji pisanja/čitanja izvan granica alocirane memorije.
+
+Valgrind obuhvata sledeće alate:
+* *Memcheck* (detektor memorijskih grešaka)
+* *Massif* (praćenje rada dinamičke memorije)
+* *Callgrind* (profajler poziva funkcija)
+* *Cachegrind* (profajler keš memorije)
+* *Hellgrind* i *DRD* (detektori grešaka u radu sa nitima)
+
+Za instalaciju *Valgrind* alata potrebno je u terminalu pokrenuti sledeću komandu:
+```
+sudo apt-get install valgrind
+```
+
+U okviru projekta analiza je rađena pomoću alata *Memcheck* i *Callgrind*.
+
+
+### Memcheck
+
+**Memcheck** je alat koj se koristi se za detektovanje memorijskih grešaka i sprovođenja analize nad mašinskim kodom.
+Upotrebom *Memcheck*-a mogu se otkriti različite vrste problema, kao što su curenja memorije, pristup ili upisivanje vrednosti van opsega, korišćenje neinicijalizovanih vrednosti, pristup već oslobođenoj memoriji, dvostruko oslobađanje meorije itd.
+
+Dodatne opcije koje su korišćene prilikom analize:
+-*--tool=memchek* : za pokretanje memchek alata
+- *--leak-check=full* : daje informacije o svim definitivno izgubljenim ili potencijalno izgubljenim blokovima, uključujući i informacije o njihovoj alokaciji
+- *--show-lead-kinds=all* : prikazuje sve vrse curenja memorije u programu
+- *--track-origins=yes* : omogućava lakše pronalaženje dela programa u kom se nalazi memoriski propust (može usporiti rad alata)
+- *--verbose* : daje dodatne informacije o procesu koji se izvršava
+- *--log-file="(date +%s).memcheck.o"* : rezultati analize će biti upisani u *(date)-memcheck.txt* fajl za više različitih pokretanja alata
+
+Pre pokretanja komande potrebno je prevesti program u **Debug** režimu.
+
+Komanda kojom je pokrenuta analiza:
+```
+valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file="$(date +%s).memcheck.out" ../19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Debug/UNDER_THE_C
+```
+
+Pokreće se pomoću [skripte](/memcheck/memcheck.sh):
+```
+./memcheck.sh
+```
+
+Kompletan izveštaj dobijen primenom *Memcheck* alata nalazi se, između ostalih, u fajlu [*memcheck.out*](/memcheck/1724273195.memcheck.out).
+
+Primeri iz izveštaja:
+(`77277` je PID):
+```
+==77277== ERROR SUMMARY: 14 errors from 14 contexts (suppressed: 0 from 0)
+==77277==
+==77277== 1 errors in context 1 of 14:
+==77277== Invalid read of size 8
+==77277==    at 0x40286A8: strncmp (strcmp.S:172)
+==77277==    by 0x400668D: is_dst (dl-load.c:216)
+==77277==    by 0x400810E: _dl_dst_count (dl-load.c:253)
+==77277==    by 0x400810E: expand_dynamic_string_token (dl-load.c:395)
+==77277==    by 0x40082B7: fillin_rpath.isra.0 (dl-load.c:483)
+==77277==    by 0x4008602: decompose_rpath (dl-load.c:654)
+==77277==    by 0x400ABF5: cache_rpath (dl-load.c:696)
+==77277==    by 0x400ABF5: cache_rpath (dl-load.c:677)
+==77277==    by 0x400ABF5: _dl_map_object (dl-load.c:2165)
+==77277==    by 0x4003494: openaux (dl-deps.c:64)
+==77277==    by 0x6D96A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==77277==    by 0x4003C7B: _dl_map_object_deps (dl-deps.c:248)
+==77277==    by 0x400EA0E: dl_open_worker_begin (dl-open.c:592)
+==77277==    by 0x6D96A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==77277==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+```
+**Komentar:** Dati deo izveštaja ukazuje na problem sa nevažećim čitanjem memorije. Ovo znači da program pokušava da pročita 8 bajta podataka iz memorijske lokacije koja nije validna za tu operaciju. Greška se dogodila unutar funkcije `strncmp` u `strcmp`. Pratilac poziva prikazuje niz funkcija koje su dovele do ove greške.
+
+Ukupan broj ovakvih greški je po izveštaju 14 u 14 različitih funkcija (konteksta). Ovo su greške koje je alat detektovao prilikom izvršavanja programa. Greške uključuju nevalidna čitanja ili pisaja u memoriju, curenje memorije, nepravilno oslobađanje memorije itd.
+
+```
+==77277== LEAK SUMMARY:
+==77277==    definitely lost: 20,248 bytes in 27 blocks
+==77277==    indirectly lost: 10,224 bytes in 51 blocks
+==77277==      possibly lost: 2,176 bytes in 5 blocks
+==77277==    still reachable: 46,204,004 bytes in 45,171 blocks
+==77277==         suppressed: 0 bytes in 0 blocks
+```
+
+Primer steka poziva:
+```
+==77277== 16 bytes in 1 blocks are still reachable in loss record 1,938 of 13,585
+==77277==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==77277==    by 0x62F84E5: QtSharedPointer::ExternalRefCountData::getAndRef(QObject const*) (qsharedpointer.cpp:1403)
+==77277==    by 0x5948B75: QWeakPointer<QObject, 1u> (qsharedpointer_impl.h:679)
+==77277==    by 0x5948B75: assign<QObject> (qsharedpointer_impl.h:675)
+==77277==    by 0x5948B75: operator= (qpointer.h:74)
+==77277==    by 0x5948B75: QAccessibleObject::QAccessibleObject(QObject*) (qaccessibleobject.cpp:81)
+==77277==    by 0x518D201: QAccessibleWidget::QAccessibleWidget(QWidget*, QAccessible::Role, QString const&) (qaccessiblewidget.cpp:208)
+==77277==    by 0x518EC13: qAccessibleFactory(QString const&, QObject*) (qaccessiblewidgetfactory.cpp:122)
+==77277==    by 0x5941A67: QAccessible::queryAccessibleInterface(QObject*) (qaccessible.cpp:690)
+==77277==    by 0x594249E: QAccessibleEvent::accessibleInterface() const (qaccessible.cpp:1764)
+==77277==    by 0x594299C: QAccessible::updateAccessibility(QAccessibleEvent*) (qaccessible.cpp:862)
+==77277==    by 0x4F9E268: QWidgetPrivate::show_helper() (qwidget.cpp:7823)
+==77277==    by 0x4FA1203: QWidgetPrivate::setVisible(bool) (qwidget.cpp:8111)
+==77277==    by 0x4F9E08F: QWidgetPrivate::showChildren(bool) (qwidget.cpp:8183)
+==77277==    by 0x4F9E0FE: QWidgetPrivate::show_helper() (qwidget.cpp:7768)
+```
+
+**Komentar:** Iz dela sažetka možemo videti da ima dosta primera curenja memorije (definitivno izgubljene, inidirektno izgubljene i moguće izgubljene memorije) - deo izveštaja `LEAK SUMMARY`.
+Iz primera steka poziva funkcija vidimo problem koji se odnosi na problem `još dostupne` memorije. 16 bajtova memorije je alocirano u jedom bloku, ali ta memorija nije oslobiđena do trenutka kada je program završio izvršavanje. Memorija je alocirana korišćenjem operatora `new` kao standardne operacije C++. Niz fja koji slede pokazuju da se memorija alocirala u t framework-u:  `QtSharedPointer::ExternalRefCountData::getAndRef(QObject const*)` i `QAccessibleObject::QAccessibleObject(QObject*)`.
+
+Generalno, u izveštaju postoji dosta `still reachable` greški koje ukazuju na loše upravljanje memorijom i neefikasno korićenje resursa.
+
