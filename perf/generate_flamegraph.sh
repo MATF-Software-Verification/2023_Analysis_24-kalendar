@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set variables
-TARGET_APP=/home/jovana/Desktop/vs/2023_Analysis_24-kalendar/19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Debug/UNDER_THE_C
+TARGET_APP=../19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Profile/UNDER_THE_C
 FLAMEGRAPH_DIR=./FlameGraph
 PERF_DATA="perf.data"
 PERF_SCRIPT_OUT="out.perf"
@@ -36,11 +36,11 @@ sudo perf script > $PERF_SCRIPT_OUT
 
 # Generate folded stack output
 echo "Generating folded stack output..."
-$FLAMEGRAPH_DIR/stackcollapse-perf.pl $PERF_SCRIPT_OUT > $FOLDED_FILE
+$FLAMEGRAPH_DIR/git/stackcollapse-perf.pl $PERF_SCRIPT_OUT > $FOLDED_FILE
 
 # Generate FlameGraph
 echo "Generating FlameGraph..."
-$FLAMEGRAPH_DIR/flamegraph.pl $FOLDED_FILE > $FLAMEGRAPH_SVG
+$FLAMEGRAPH_DIR/git/flamegraph.pl $FOLDED_FILE > $FLAMEGRAPH_SVG
 
 # Clean up intermediate files
 rm -f $PERF_DATA $PERF_SCRIPT_OUT $FOLDED_FILE
