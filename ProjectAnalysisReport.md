@@ -401,3 +401,8 @@ newfstatat(AT_FDCWD, "/etc/localtime", {st_mode=S_IFREG|0644, st_size=1920, ...}
 
 
 ## Zaključak
+Kroz analizu projekta, kao i posmatranjem svih pronalaska upotrebljenih alata, opšti zaključak je da u projektu nisu pronađeni veći propusti koji mogu značajno uticati na njegovu funkcionalnost.
+Analiza je pokazala da ima propusta u radu sa memorijom (prilično primera curenja memorije). Takođe, uočeni su propusti statičkom analizom koje se odnose na način definisanja promenljivih i moguće optimizacije koje bi poboljšale kod. U principu, kod je jednostavan, postoji par funkcija čiji je broj poziva tokom izvršavanja programa najveći i čija bi optimizacija imala najviše efekta.
+Treba istaći koliko je primena alata za verifikaciju važan deo procesa razvoja softvera.
+Kroz jednostavnu integraciju ovih alata u projekat, identifikujemo greške kao što su curenje memorije, smanjena čitljivost i redudantnost koda, koje u nekim scenarijima mogu imati ozbiljne posledice.
+

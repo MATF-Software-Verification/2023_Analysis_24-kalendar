@@ -1,6 +1,3 @@
-# 2023_Analysis_24-kalendar
-obsolete
-
 # 2023_Analysis_19_UNDER_THE_C
 
 Ovaj gitHub repozitorijum je nastao zarad izrade samostalnog praktičnog seminarskog rada za potrebe kursa Verifikacija softvera na master studijama Matematičkog fakulteta u Beogradu, smer Računarstvo i informatika.
@@ -16,7 +13,7 @@ Igrica ima ukupno četiri nivoa i u svakom nivou igrač upravlja različitim lik
 Na kraju prva tri nivoa zadatak igrača jeste da na različite načine oslobodi sledećeg lika kojim će upravljati u narednom nivou. Prelaskom četvrtog nivoa dolazi se do kraja igrice gde su svi prethodni igrači zajedno kod blaga. Na putu do spašavanja, igrače vrebaju različiti neprijatelji koji im oduzimaju živote i otežavaju put ka cilju.
 
 Projekat je rađen u programskom jeziku **C++** u `QtCreator` radnom okruženju.
-
+Bildovan je ugrađenim gcc alatom samog okuženja u *Debug* ili *Profile* režim.
 
 ## Osnovne informacije o analizi
 [GitHub repozitorijum projekta](https://gitlab.com/matf-bg-ac-rs/course-rs/projects-2020-2021/19-under-the-c)
@@ -30,15 +27,17 @@ U analizi su korišćeni sledeći alati:
     - Memcheck
     - Callgrind
 - Alati za statičku analizu:
-    - Clang-Tidy
+    - Clang-tidy
     - Cppcheck
 - Perf
 - Strace
 
-Opisi svakog od alata, skripte za pokretanje, sami outputi analize se nalaze u dokumentu [dok](ProjectAnalysisReport.md)
+Opisi svakog od alata, uputstva za njihova pokratanje, rezultati i komentari analize, dati su u fajlu [ProjectAnalysisReport.md](ProjectAnalysisReport.md)
 
 ## Uputstvo za reprodukciju analize
 Alati su, većinski, pokretani iz terminala Ubuntu operativnog sistema koristeći unapred pripremljene skripte
 Pojedini alati su se pokretali i direktno iz `QtCreator` okruženja jer u okviru okruženja postoji podrška za izvršavanje pojedinih alata za analizu.
 
 ## Zaključak
+Detaljniji opis zaključaka nakon analize svakog od alata kao i sveukupan zaključak mogu se naći u dokumentu
+[ProjectAnalysisReport.md](ProjectAnalysisReport.md).
