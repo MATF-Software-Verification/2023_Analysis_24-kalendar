@@ -55,8 +55,54 @@ Primera iz dobijenog izveštaja:
 
      **Komentar:** Alat kaže da u kodu postoji deklarisana funkcija koja se nigde ne koristi.
 
-## Clang-tidy
-TBD
+
+## Clang-Tidy
+
+**Clang-Tidy** predstavlja jedan od *Clang* zasnovanih alata koji obavlja statičku analizu koda (vrši analiziranje izvornog koda bez njegovog izvršavanja sa ciljem pronalaženja grešaka, poboljšanja kvaliteta koda i ispravljanja neoptimalno napisanih delova koda). **Clang-Tidy** je *C++* linter alati koji analizira kod i pronalazi programske i stilske greške unutar koda.
+
+Ovaj alat je integrisan u okviru *QtCreator*-a i njegova upotreba je opisana u nastavku.
+Da bi se analiza izvršila potrebno je napraviti *custom* konfiguraciju. Default konfiguracija je takva da se ne može menjati.
+* Dodavanje *custom* konfiguracije:
+   - Izabrati karticu *Edit* i u njoj izabrati *Preferences* iz padajućeg menija.
+   - U listi sa leve strane izabrati stavku *Analyzer*.
+   - U okviru ovog prozora može se dodati nova konfiguracija.
+   - Dodavanje nove konfiguracije dato je na slici:
+        ![img](clang-tidy/clang-tidy_configuration_checks.PNG)
+
+Nakon pravljenja odgovarajuće konfiguracije, pokrećemo alata:
+* Izabrati karticu *Analyze*, a zatim odabrati alat *Clang-Tidy* iz padajućeg menija.
+   ![img](clang-tidy/clang-tidy_open.PNG)
+
+* Izabrati fajlove nad kojima želimo da primenimo analizu.
+    - Header fajlovi:
+        ![img](clang-tidy/clang-tidy_headers.PNG)
+    - Source fajlovi:
+        ![img](clang-tidy/clang-tidy_sources.PNG)
+
+* Klikom na dugme *Analyze* pokreće se analiza nad izabranim fajlovima.
+* Dobijen je sledeći rezultat.
+  - Header fajlovi:
+        ![img](clang-tidy/diag_headers.PNG)
+  - Source fajlovi:
+        [img](clang-tidy/diag_sources.PNG)
+
+Analiza je dala sledeće outpute:
+*  ![img](clang-tidy/trailing_return.PNG)
+
+    **Komentar:** Alat preporučuje upotrebu *trailing return* tipa, koji podrazumeva da je tip povratne vrednosti naveden nakon liste argumenata funkcije, koristeći *auto* za automatsko određivanje tipa
+
+*  ![img](clang-tidy/constuctor_const.PNG)
+
+    **Komentar:** Alat sugeriše da metoda može biti označena kao *const* jer ne menja stanje objekta na kojem se poziva
+
+*  ![img](clang-tidy/constructor_not_initialized.PNG)
+
+    **Komentar:** Upozorenje da konstruktor klase neinicijalizuje sve člaske promenljive ili podatke koje bi trebalo inicijalizovati
+
+*  ![img](clang-tidy/protected_visibility.PNG)
+
+    **Komentar:** Upozorenje na *protected* vidljivost članova klase koje je signalizirano jer je član previše izložen ili je potrebo da bude bolje enkapsuliran.
+
 
 ## Valgrind alati
 
@@ -283,3 +329,4 @@ U nastavku vidimo "*plameni graf*" dobijen na osnovu uzimanja uzorka alatom *Per
 
 Dijagram prikazuje populaciju uzoraka na x osi, a dubinu steka na y osi. Svaka funkcija je jedan pravougaonik, širine relativne broju uzoraka.
 
+## Zaključak
