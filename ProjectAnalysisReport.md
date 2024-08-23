@@ -245,7 +245,7 @@ Pokreće se pomoću [skripte](perf/perf.sh):
 ```
 Na slici ispod je prikazan izveštaj dobijen pokretanjem perf alata.
 
-![Perf izvestaj](perf/perf_report.png)
+![Perf izvestaj](perf/perf_report.PNG)
 
 Kolona "*Self*" prikazuje procenat vremena provedenog direktno u trenutnoj funkciji u odnosu na ukupno vreme izvršavanja programa.
 Gledajući izveštaj, vidimo da nemamo funkcije koje preveliki procenat vremena troše u svom sopstvenom kontekstu, u vom samom izvršavanju.
