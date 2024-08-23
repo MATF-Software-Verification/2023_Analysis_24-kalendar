@@ -329,4 +329,75 @@ U nastavku vidimo "*plameni graf*" dobijen na osnovu uzimanja uzorka alatom *Per
 
 Dijagram prikazuje populaciju uzoraka na x osi, a dubinu steka na y osi. Svaka funkcija je jedan pravougaonik, širine relativne broju uzoraka.
 
+
+## Strace
+
+Alat *Strace* predstavlja alat za raćenje sistemskih poziva (syscall) i signala koje izvršava proces u UNIX ili Linux operativnom sistemu. To je moćan alat za dijagnostiku, otklanjanje grešaka i razumevanje ponašanja aplikacije i sistema. On se koristi za praćenje komunikacije aplikacije sa sistemom, posebno kada se istražuju roblemi vezani za performanse, dozvole ili druge probleme na nivou sistema.
+
+Za instalaciju *Strace*-a je potrebno pokrenuti sledeću komandu
+
+```
+sudo apt-get install strace
+```
+
+Pre pokretanja komande program je preveden u **Debug** režim.
+
+Dodatne opcije koje su korišćene prilikom analize:
+- *-o strace_output_$(date +%Y%m%d_%H%M%S).txt* : upisuje izlaz strace-a u fajl strace_output_date.txt
+
+Alat je pokrenut pomocu [skripte](strace/strace.sh):
+```
+./strace.sh
+```
+
+Na početku skripte su definisane neke globalne promenljive.
+Skipta sadrži poziv:
+```
+strace -o "$output_file" "$program"
+```
+Njime se pokreće alat *strace*.
+
+Kompletan izveštaj dobijen primenom *strace* alata nalazi se u fajlu [*strace.output*](/strace/strace_output_20240821_234501.txt).
+
+Neki od primera iz izveštaja:
+```
+arch_prctl(0x3001 /* ARCH_??? */, 0x7fff89e1bc70) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x780fdf428000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/jovana/Qt/5.15.1/gcc_64/lib/glibc-hwcaps/x86-64-v2/libQt5Multimedia.so.5", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/jovana/Qt/5.15.1/gcc_64/lib/glibc-hwcaps/x86-64-v2", 0x7fff89e1ae90, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/jovana/Qt/5.15.1/gcc_64/lib/tls/x86_64/x86_64/libQt5Multimedia.so.5", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+```
+
+**Komentar:** Dati primer pokazuje da aplikacija pokušava da učita biblioteku `libQt5Multimedia.so.5` iz nekoloko različitih putanja, kao deo dinamičkog učitavanja i optimizacije performansi. Međutim, nijedna od navedenih lokacija ne sadrži traženi fajl, što rezultira nizom grešaka `ENOENT`. Takođe proces vrši alokaciju memorije i pokušava da konfiguriše arhitektru procesora, ali sa nevažećim argumentom `arch_prctl`, što može ukazivati na nekompatabilnosti ili problem u konfiguraciji.
+
+```
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{iov_base="\202\3\n\0\16\0\340\0\300\4\340\0\0\5\320\2\363\4\1\0\f\0\22\0\363\4\1\0\30\2\0\0"..., iov_len=632}], 1) = 632
+poll([{fd=5, events=POLLIN}, {fd=6, events=POLLIN}, {fd=13, events=POLLIN}, {fd=15, events=POLLIN}, {fd=22, events=POLLIN}, {fd=24, events=POLLIN}, {fd=31, events=POLLIN}, {fd=33, events=POLLIN}, {fd=35, events=POLLIN}, {fd=37, events=POLLIN}, {fd=39, events=POLLIN}, {fd=41, events=POLLIN}, {fd=43, events=POLLIN}, {fd=45, events=POLLIN}, {fd=47, events=POLLIN}], 15, 0) = 1 ([{fd=5, revents=POLLIN}])
+read(5, "\t\0\0\0\0\0\0\0", 16)         = 8
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{iov_base="+\0\1\0", iov_len=4}], 1) = 4
+futex(0x7fff89e1ad68, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY) = 0
+futex(0x6347ac1277c8, FUTEX_WAKE_PRIVATE, 1) = 0
+poll([{fd=3, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=3, revents=POLLOUT}])
+writev(3, [{iov_base="<\0\2\0\301\4\340\0007\0\5\0\302\4\340\0\6\0\340\0\0\0\1\0\0\0\0\0;\3\5\0"..., iov_len=864}], 1) = 864
+write(5, "\1\0\0\0\0\0\0\0", 8)         = 8
+```
+
+**Komentar:** Dati primer pokazuje praćenje sistemskih poziva koje izvršava pokrenut proces. Operacja *poll* čeka na fajl deskriptor 3 da postane spreman za čitanje/pisanje. Vidimo da je na početku iz fd 3 uspešno pisano 632 bajta. Naredni read poziv, umesto 16, čita 8 bajtova sa fd 5. Write pozivi uspešno upisuju bajtove na prosleđene fajl deskriptore. Aplikacja koristi *futex* operaciju za međusobnu sinhronizaciju niti, što ukazuje na višeniti program koji aktivno komunicira sa više fajl deskriptora ili socket-a.
+```
+futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483717, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483720, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483721, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483723, NULL) = 0
+futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483734, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+newfstatat(AT_FDCWD, "/etc/localtime", {st_mode=S_IFREG|0644, st_size=1920, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/etc/localtime", {st_mode=S_IFREG|0644, st_size=1920, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/etc/localtime", {st_mode=S_IFREG|0644, st_size=1920, ...}, 0) = 0
+```
+
+**Komentar:** Dati primer pokazuje nekoliko poziva *futex* i *newstatat* operacija. *futex* vrši sinhornizaciju niti na osnovu vrednosti 2147483717 na koju treba biti promenljiva postavljena u memoriji. U prva tri slučaja povratna vrednost je *EAGAIN* što ukazuje da je resurs trenutno nedostupan, nije moguće izvršiti čekanje jer je promenljiva promenila vrednost pre nego što je nit imala šansu da zaspi. Povratna vrednost 0 ukazuje da je čekanje bilo uspešno i da je nit probuđena kad je promenljiva promenjena. Ukratko, prikazana je kombinacija pokušaja niti da sinhronizuju pristup određenim resursima (niti čekaju ili pokušavaju da sinhronizuju pristup memorijskoj lokaciji). *newfstat* su pozivi koji se koriste za pribavljanje informacija o fajlu (slično stat).
+
+
 ## Zaključak
