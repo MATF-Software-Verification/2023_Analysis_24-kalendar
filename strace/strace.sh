@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-program="/home/jovana/Desktop/vs/2023_Analysis_24-kalendar/19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Debug/UNDER_THE_C"
+program="../19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Debug/UNDER_THE_C"
 output_file="strace_output_$(date +%Y%m%d_%H%M%S).txt"
 
 # Run the program with strace
