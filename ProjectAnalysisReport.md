@@ -197,7 +197,7 @@ Pokreće se pomoću [skripte](callgrind/callgrind.sh):
 ```
 
 Kao rezultat analize, dobijen je *callgrind-PID.txt* report fajl.
-Kako je dodata opcija za simulaciju keš memorije, u reportu će se prikazati simulicija memorije mašine (koju se dobija i upotrebom alata `cachegrind`), koja ima prvi nivo keš memorije podeljene u dve odvojene nezavisne sekcije: I1 - sekcija keš memorije u koju se smeštaju instrukcije D1 - sekcija keš memorije u koju se smeštaju podaci. Drugi nivo keš memorije koja se simulira je objedinjen - LL, skraćeno od eng. last level.
+Kako je dodata opcija za simulaciju keš memorije, u reportu će se prikazati simulicija memorije mašine (koju se dobija promenom alata `cachegrind`), koja ima prvi nivo keš memorije podeljene u dve odvojene nezavisne sekcije: I1 - sekcija keš memorije u koju se smeštaju instrukcije D1 - sekcija keš memorije u koju se smeštaju podaci. Drugi nivo keš memorije koja se simulira je objedinjen - LL, skraćeno od eng. last level.
 
 Pored .txt fajla, kao output se dobija i [*callgrind-109531.out*](callgrind/callgrind-109531.out)
 *callgrind.out.11677* moze se otvoriti pomoću **KCachegrind** pomoćnog alata za vizuelizaciju.
@@ -205,7 +205,6 @@ Pored .txt fajla, kao output se dobija i [*callgrind-109531.out*](callgrind/call
 ```
 sudo apt-get install kcachegrind
 ```
-
 Prikaz *Calle Map* i *Calles* za funkciju *Game::initialize()*:
 
 ![img](callgrind/kachegrind/kachegrind_allcallesmap.PNG)
@@ -216,4 +215,71 @@ Na sledećoj slici je prikazana lista svih funkcija koje su se pozivale od pokre
 ![img](callgrind/kachegrind/callgrind_calgraph.PNG)
 
 **Komentar:** Izveštaj na osnovu kcachegrinda pokazuje da su se najvećim delom izvršavanja pozivale funkcije implemetirane od strane programera, sistemskih poziva je manje.
+
+## Perf
+
+Alat *Perf* predstavlja moćan alat za analizu performansi na Linux operativnim sistemima. Ovaj alat omogućava programerima da analiziraju performanse njihovog koda kako bi identifikovali potencijalne uzroke usporenja ili probleme sa resursima.
+Glavna upotreba alata *Perf* je identifikacija i eliminacija uskih grla u performansama softverskog sistema. On se takođe koristi i za praćenje događaja na nivou kernela i korisničkog prostora (keš promašaji, instrukcie i ciklusi, sistemski pozivi itd.). Kroz analizu podataka o vremenu izvršavanja programeri mogu pronaći delove koda koji zahtevaju optimizaciju, kao i lokacije gde se resursi (CPU, memorija, disk itd.) troše neefikasno.
+
+Za instalaciju *Perf*-a je potrebno pokrenuti komandu koja instalira linux-tools paket za trenutnu verziju jezgra ($(uname -r)), što takođe uključuje i alat Perf.
+
+```
+sudo apt-get install linux-tools-$(uname -r)
+```
+
+Dodatne opcije koje su korišćene prilikom analize:
+- *record* : podkomanda alata perf koja pokrece profilisanje i snima podatke o performansama u fajl (beleži sve relevantne događaje - promašsaje keša, instrukcije, cikluse itd)
+- *--call-graph dwarf* : ova opcija koristi DWARF debug informacije za generisanje poziva funkcija (call graph)
+
+Pre pokretanja komande potrebno je prevesti program u **Profile** režimu.
+
+Komanda kojom je pokrenuta analiza izgleda ovako:
+```
+sudo perf record  --call-graph dwarf ../19-under-the-c/UNDER_THE_C/build/Desktop_Qt_5_15_1_GCC_64bit-Profile/UNDER_THE_C
+sudo perf report
+```
+
+Pokreće se pomoću [skripte](perf/perf.sh):
+```
+./perf.sh
+```
+Na slici ispod je prikazan izveštaj dobijen pokretanjem perf alata.
+
+![Perf izvestaj](perf/perf_report.png)
+
+Kolona "*Self*" prikazuje procenat vremena provedenog direktno u trenutnoj funkciji u odnosu na ukupno vreme izvršavanja programa.
+Gledajući izveštaj, vidimo da nemamo funkcije koje preveliki procenat vremena troše u svom sopstvenom kontekstu, u vom samom izvršavanju.
+
+U koloni "*Children*" vidimo procente koji prikazuju ukupno procesorsko vreme koje su potrošili svi potomci funkcije (uključujući samu funkciju i sve funkcije koje ona direktno ili indirektno poziva). Ova vrednost prikazuje koliki je doprinos pozvanih funkcija ukupnom vremenu provedenom u trenutnoj funkciji.
+Gledajući izveštaj, očekivano je da je broj izvršavanja potomaka glavne funkcije *main* najveći. Takođe, postoji još par funkcija, pisanih od strane autora projekta, gde se može razmotriti optimizaciju broja poziva. Međutim, to su glavne funkcije koje se pozivaju najvećim delom celog izvršavanja programa, tako je procenat očekivan.
+
+U kombinaciji sa alatom *Perf* koristi se često *FlameGraph* - moćan alat za vizualizaciju. FlameGraph pruža intuitivan prikaz vremena izvršavanja različitih delova koda u obliku "*plamenog grafa*".
+Ovaj grafički prikaz olakšava identifikaciju glavnih uzroka usporenja i olakšava optimizaciju koda. Pruža intuitivan način da se identifikuju uska grla u performansama i uoče funkcije koje najviše doprinose ukupnom opterećenju CPU-a.
+Kada se koristi zajedno sa *Perf* alatom, *FlameGraph* omogućava programerima da brzo identifikuju gde se resursi troše i koje funkcije uzimaju najviše vremena tokom izvršavanja programa.
+Potrebno je klonirati github repozitorijum i dodati ga kao submodule.
+```
+git clone https://github.com/brendangregg/FlameGraph
+```
+
+Za dobijenje "*plamenog grafa*" neophodno je pokrenuti [skriptu](perf/generate_flamegraph.sh)
+U skripti se najpre definišu varijable. Nakon toga se vrši provera da li su definisane određene varijable.
+Komandom:
+```sh
+sudo perf record -F 99 -g -- $TARGET_APP
+```
+pokreće se profilisanje aplikacije pomoću alata perf.
+Opcije:
+- `-F 99` - frekvencija sampliranja u Hz (visoke frekvencije koštaju više, 99Hz ne bi trebalo da utiče na izvršavanje)
+- `-g` - uključivanje informacija o stekovima (_stack traces_); opcija `-g` prima opcioni argument koji predstavlja metod razvijanja steka
+- `--` - preskače opcioni metod opcije `-g`
+
+Dalje se generiše output skripte u datoteku `out.perf`.
+Sledeća komanda koristeći perl skriptu transformiše tekstualni izlaz iz `perf script` u folded stack format pogodan za generisanje `FlameGraph`-a.
+Nakon toga se generiše sam `plameni graf` u .svg datoteci i brišu se privremeni fajlovi.
+
+U nastavku vidimo "*plameni graf*" dobijen na osnovu uzimanja uzorka alatom *Perf*.
+
+![Flame graph](perf/flamegraph.svg)
+
+Dijagram prikazuje populaciju uzoraka na x osi, a dubinu steka na y osi. Svaka funkcija je jedan pravougaonik, širine relativne broju uzoraka.
 
