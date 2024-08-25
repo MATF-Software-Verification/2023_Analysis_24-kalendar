@@ -17,7 +17,7 @@ Bildovan je ugrađenim gcc alatom samog okuženja u *Debug* ili *Profile* režim
 
 ## Osnovne informacije o analizi
 [GitHub repozitorijum projekta](https://gitlab.com/matf-bg-ac-rs/course-rs/projects-2020-2021/19-under-the-c)
-[Commit sha](691f17bbb4ceb32c120bd4e8d40e90d0c141a79d)
+commit SHA: 691f17bbb4ceb32c120bd4e8d40e90d0c141a79d
 
 Sama analiza je vršena nad glavnom **master** granom.
 
