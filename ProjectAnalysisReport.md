@@ -11,7 +11,7 @@ Korišćeni alati:
 
 ## Cppcheck
 
-**Cppcheck** je alat koji se koristi za statičku analizu koda pisanog u C i C++ rogramskom jeziku. Njegova osnovna svrha je otkrivanje grešaka u kodu kao što su potencijalni problemi sa memorijom (npr. curenje memorije), dereferenciranje null pokazivača, buffer overflow-i, korišćenje neinicijalizovanih varijabli, i druge vrste grešaka koje mogu proći neopaženo tokom kompajliranja ili izvršavanja programa. Alat je za statičku analizu - analizira kod bez njegovog izvršavanja.
+**Cppcheck** je alat koji se koristi za statičku analizu koda pisanog u C i C++ programskom jeziku. Njegova osnovna svrha je otkrivanje grešaka u kodu kao što su potencijalni problemi sa memorijom (npr. curenje memorije), dereferenciranje null pokazivača, buffer overflow-i, korišćenje neinicijalizovanih varijabli, i druge vrste grešaka koje mogu proći neopaženo tokom kompajliranja ili izvršavanja programa. Alat je za statičku analizu - analizira kod bez njegovog izvršavanja.
 Alat se pokreće nad source fajlovima.
 
 Za instalaciju *Cppcheck* alata potrebno je u terminalu pokrenuti sledeću komandu:
@@ -97,7 +97,7 @@ Analiza je dala sledeće outpute:
 
 *  ![img](clang-tidy/constructor_not_initialized.PNG)
 
-    **Komentar:** Upozorenje da konstruktor klase neinicijalizuje sve člaske promenljive ili podatke koje bi trebalo inicijalizovati
+    **Komentar:** Upozorenje da konstruktor klase neinicijalizuje sve članske promenljive ili podatke koje bi trebalo inicijalizovati
 
 *  ![img](clang-tidy/protected_visibility.PNG)
 
@@ -106,7 +106,7 @@ Analiza je dala sledeće outpute:
 
 ## Valgrind alati
 
-Valgrind je moćan alat za profilisanje i otkrivanje grešaka u emoriji u C, C++ i sličnim jezicima. Najčešće se koristi za detekciju problema vezanih za alokaciju i upravljanje memorijom, prisup neinicijalizovanim memorijskim lokacijama ili pokušaji pisanja/čitanja izvan granica alocirane memorije.
+Valgrind je moćan alat za profilisanje i otkrivanje grešaka u memoriji u C, C++ i sličnim jezicima. Najčešće se koristi za detekciju problema vezanih za alokaciju i upravljanje memorijom, prisup neinicijalizovanim memorijskim lokacijama ili pokušaji pisanja/čitanja izvan granica alocirane memorije.
 
 Valgrind obuhvata sledeće alate:
 * *Memcheck* (detektor memorijskih grešaka)
@@ -207,7 +207,7 @@ Primer steka poziva:
 ```
 
 **Komentar:** Iz dela sažetka možemo videti da ima dosta primera curenja memorije (definitivno izgubljene, inidirektno izgubljene i moguće izgubljene memorije) - deo izveštaja `LEAK SUMMARY`.
-Iz primera steka poziva funkcija vidimo problem koji se odnosi na problem `još dostupne` memorije. 16 bajtova memorije je alocirano u jedom bloku, ali ta memorija nije oslobiđena do trenutka kada je program završio izvršavanje. Memorija je alocirana korišćenjem operatora `new` kao standardne operacije C++. Niz fja koji slede pokazuju da se memorija alocirala u t framework-u:  `QtSharedPointer::ExternalRefCountData::getAndRef(QObject const*)` i `QAccessibleObject::QAccessibleObject(QObject*)`.
+Iz primera steka poziva funkcija vidimo problem koji se odnosi na problem `još dostupne` memorije. 16 bajtova memorije je alocirano u jedom bloku, ali ta memorija nije oslobođena do trenutka kada je program završio izvršavanje. Memorija je alocirana korišćenjem operatora `new` kao standardne operacije C++. Niz fja koji slede pokazuju da se memorija alocirala u:  `QtSharedPointer::ExternalRefCountData::getAndRef(QObject const*)` i `QAccessibleObject::QAccessibleObject(QObject*)`.
 
 Generalno, u izveštaju postoji dosta `still reachable` greški koje ukazuju na loše upravljanje memorijom i neefikasno korićenje resursa.
 
@@ -247,7 +247,7 @@ Kako je dodata opcija za simulaciju keš memorije, u reportu će se prikazati si
 
 Pored .txt fajla, kao output se dobija i [*callgrind-109531.out*](callgrind/callgrind-109531.out)
 *callgrind.out.11677* moze se otvoriti pomoću **KCachegrind** pomoćnog alata za vizuelizaciju.
-**KCachegrind** alat se na instalira pokretanjem komande:
+**KCachegrind** alat se instalira pokretanjem komande:
 ```
 sudo apt-get install kcachegrind
 ```
@@ -274,7 +274,7 @@ sudo apt-get install linux-tools-$(uname -r)
 ```
 
 Dodatne opcije koje su korišćene prilikom analize:
-- *record* : podkomanda alata perf koja pokrece profilisanje i snima podatke o performansama u fajl (beleži sve relevantne događaje - promašsaje keša, instrukcije, cikluse itd)
+- *record* : podkomanda alata perf koja pokrece profilisanje i snima podatke o performansama u fajl (beleži sve relevantne događaje - promašaje keša, instrukcije, cikluse itd)
 - *--call-graph dwarf* : ova opcija koristi DWARF debug informacije za generisanje poziva funkcija (call graph)
 
 Pre pokretanja komande potrebno je prevesti program u **Profile** režimu.
@@ -294,7 +294,7 @@ Na slici ispod je prikazan izveštaj dobijen pokretanjem perf alata.
 ![Perf izvestaj](perf/perf_report.PNG)
 
 Kolona "*Self*" prikazuje procenat vremena provedenog direktno u trenutnoj funkciji u odnosu na ukupno vreme izvršavanja programa.
-Gledajući izveštaj, vidimo da nemamo funkcije koje preveliki procenat vremena troše u svom sopstvenom kontekstu, u vom samom izvršavanju.
+Gledajući izveštaj, vidimo da nemamo funkcije koje preveliki procenat vremena troše u svom sopstvenom kontekstu, u svom samom izvršavanju.
 
 U koloni "*Children*" vidimo procente koji prikazuju ukupno procesorsko vreme koje su potrošili svi potomci funkcije (uključujući samu funkciju i sve funkcije koje ona direktno ili indirektno poziva). Ova vrednost prikazuje koliki je doprinos pozvanih funkcija ukupnom vremenu provedenom u trenutnoj funkciji.
 Gledajući izveštaj, očekivano je da je broj izvršavanja potomaka glavne funkcije *main* najveći. Takođe, postoji još par funkcija, pisanih od strane autora projekta, gde se može razmotriti optimizaciju broja poziva. Međutim, to su glavne funkcije koje se pozivaju najvećim delom celog izvršavanja programa, tako je procenat očekivan.
@@ -385,7 +385,7 @@ writev(3, [{iov_base="<\0\2\0\301\4\340\0007\0\5\0\302\4\340\0\6\0\340\0\0\0\1\0
 write(5, "\1\0\0\0\0\0\0\0", 8)         = 8
 ```
 
-**Komentar:** Dati primer pokazuje praćenje sistemskih poziva koje izvršava pokrenut proces. Operacja *poll* čeka na fajl deskriptor 3 da postane spreman za čitanje/pisanje. Vidimo da je na početku iz fd 3 uspešno pisano 632 bajta. Naredni read poziv, umesto 16, čita 8 bajtova sa fd 5. Write pozivi uspešno upisuju bajtove na prosleđene fajl deskriptore. Aplikacja koristi *futex* operaciju za međusobnu sinhronizaciju niti, što ukazuje na višeniti program koji aktivno komunicira sa više fajl deskriptora ili socket-a.
+**Komentar:** Dati primer pokazuje praćenje sistemskih poziva koje izvršava pokrenut proces. Operacija *poll* čeka na fajl deskriptor 3 da postane spreman za čitanje/pisanje. Vidimo da je na početku iz fd 3 uspešno pisano 632 bajta. Naredni read poziv, umesto 16, čita 8 bajtova sa fd 5. Write pozivi uspešno upisuju bajtove na prosleđene fajl deskriptore. Aplikacija koristi *futex* operaciju za međusobnu sinhronizaciju niti, što ukazuje na višeniti program koji aktivno komunicira sa više fajl deskriptora ili socket-a.
 ```
 futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483717, NULL) = -1 EAGAIN (Resource temporarily unavailable)
 futex(0x7fff89e1b164, FUTEX_WAIT_PRIVATE, 2147483720, NULL) = -1 EAGAIN (Resource temporarily unavailable)
